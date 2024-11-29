@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
@@ -30,13 +31,14 @@ fun MapScreen(
     lat: Double,
     lon: Double,
     showTopBar: Boolean = true,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
 ) {
     val markerState = rememberMarkerState(position = LatLng(lat, lon))
-    val cameraPositionState = rememberCameraPositionState {
-        this.position =
-            CameraPosition.fromLatLngZoom(LatLng(lat, lon), 12f)
-    }
+    val cameraPositionState =
+        rememberCameraPositionState {
+            this.position =
+                CameraPosition.fromLatLngZoom(LatLng(lat, lon), 12f)
+        }
     Scaffold(
         topBar = {
             if (showTopBar) {
@@ -46,15 +48,18 @@ fun MapScreen(
                         IconButton(onClick = onBackClick) {
                             Icon(
                                 Icons.AutoMirrored.Default.ArrowBack,
-                                contentDescription = null
+                                contentDescription = null,
                             )
                         }
-                    }
+                    },
                 )
             }
-        }
+        },
     ) { pv ->
-        Map(modifier.padding(pv), markerState, cameraPositionState)
+        Map(
+            modifier
+                .padding(pv)
+                .testTag("MapScreen-${cityName}"), markerState, cameraPositionState)
     }
 }
 
@@ -65,11 +70,11 @@ fun Map(
     cameraPositionState: CameraPositionState,
 ) {
     Box(
-        modifier = modifier
+        modifier = modifier,
     ) {
         GoogleMap(
             modifier = modifier,
-            cameraPositionState = cameraPositionState
+            cameraPositionState = cameraPositionState,
         ) {
             Marker(markerState)
         }

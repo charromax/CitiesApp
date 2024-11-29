@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -40,12 +41,12 @@ import com.example.citiesapp.domain.City
 fun CityListScreen(
     modifier: Modifier = Modifier,
     viewModel: CityViewModel = hiltViewModel(),
-    onCityItemClicked: (City) -> Unit
+    onCityItemClicked: (City) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
 
     Box(
-        modifier = modifier
+        modifier = modifier.testTag("CityListScreen"),
     ) {
         CityListContent(
             modifier = modifier,
@@ -54,7 +55,7 @@ fun CityListScreen(
             isFavourite = viewModel::isFavouriteCity,
             onFavouriteToggle = viewModel::toggleFavourite,
             onShowFavouritesOnly = viewModel::showFavouritesOnly,
-            onCityItemClicked = onCityItemClicked
+            onCityItemClicked = onCityItemClicked,
         )
     }
 }
@@ -78,24 +79,26 @@ fun CityListContent(
                 onUpdateSearch(newText)
             },
             label = { Text("Buscar ciudad") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            maxLines = 1
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+            maxLines = 1,
         )
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier =
+                Modifier
+                    .fillMaxWidth(),
         ) {
             Checkbox(
                 checked = state.onlyFavourites,
-                onCheckedChange = { onShowFavouritesOnly(it) }
+                onCheckedChange = { onShowFavouritesOnly(it) },
             )
             Text(
                 text = "Favoritas",
-                modifier = Modifier.padding(start = 8.dp)
+                modifier = Modifier.padding(start = 8.dp),
             )
         }
         if (citiesPagingData != null) {
@@ -103,22 +106,23 @@ fun CityListContent(
                 items(citiesPagingData.itemCount) { index ->
                     val city = citiesPagingData[index] ?: City()
                     CityItem(
+                        modifier = Modifier.testTag("CityItem-${city.name}"),
                         city = city,
                         onFavouriteToggle = { onFavouriteToggle(city) },
                         onCityItemClicked = { onCityItemClicked(city) },
-                        isFavourite = isFavourite(city)
+                        isFavourite = isFavourite(city),
                     )
                 }
 
                 citiesPagingData.apply {
                     when {
                         loadState.refresh is LoadState.Loading ||
-                                loadState.append is LoadState.Loading ||
-                                state.isLoading -> {
+                            loadState.append is LoadState.Loading ||
+                            state.isLoading -> {
                             item {
                                 NoDataContent(
                                     text = "Cargando ciudades...",
-                                    isError = false
+                                    isError = false,
                                 )
                             }
                         }
@@ -128,7 +132,7 @@ fun CityListContent(
                             item {
                                 NoDataContent(
                                     text = "Error: ${error.error.localizedMessage}",
-                                    isError = true
+                                    isError = true,
                                 )
                             }
                         }
@@ -138,7 +142,7 @@ fun CityListContent(
                                 item {
                                     NoDataContent(
                                         text = "No pude encontrar ninguna ciudad con ese nombre :(",
-                                        isError = true
+                                        isError = true,
                                     )
                                 }
                             }
@@ -152,6 +156,7 @@ fun CityListContent(
 
 @Composable
 fun CityItem(
+    modifier: Modifier,
     city: City,
     onFavouriteToggle: (City) -> Unit,
     onCityItemClicked: (City) -> Unit,
@@ -159,27 +164,28 @@ fun CityItem(
 ) {
     Column {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onCityItemClicked(city) }
+            modifier =
+                modifier
+                    .fillMaxWidth()
+                    .clickable { onCityItemClicked(city) },
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "${city.name}, ${city.country}",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
 
                 Text(
                     text = "Lat: ${city.coord.lat}, Lon: ${city.coord.lon}",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
+                    color = Color.Gray,
                 )
             }
             IconButton(onClick = { onFavouriteToggle(city) }) {
                 Icon(
                     imageVector = if (isFavourite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                    contentDescription = null
+                    contentDescription = null,
                 )
             }
         }
@@ -188,13 +194,17 @@ fun CityItem(
 }
 
 @Composable
-private fun NoDataContent(text: String, isError: Boolean) {
+private fun NoDataContent(
+    text: String,
+    isError: Boolean,
+) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp)
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
     ) {
         if (!isError) {
             CircularProgressIndicator()
@@ -203,7 +213,7 @@ private fun NoDataContent(text: String, isError: Boolean) {
         Text(
             text = text,
             style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier.padding(8.dp),
         )
     }
 }

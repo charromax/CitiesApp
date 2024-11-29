@@ -13,25 +13,29 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class FavouritesDataStore @Inject constructor(
-    @ApplicationContext private val context: Context
-) {
-    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "favourites_prefs")
+class FavouritesDataStore
+    @Inject
+    constructor(
+        @ApplicationContext private val context: Context,
+    ) {
+        private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "favourites_prefs")
 
-    companion object {
-        private val FAVOURITES_KEY = stringSetPreferencesKey("favourite_cities")
-    }
-
-    val favouriteCities: Flow<Set<Int>> = context.dataStore.data
-        .map { preferences ->
-            preferences[FAVOURITES_KEY]?.map {
-                it.toInt()
-            }?.toSet() ?: emptySet()
+        companion object {
+            private val FAVOURITES_KEY = stringSetPreferencesKey("favourite_cities")
         }
 
-    suspend fun saveFavouriteCities(cityIds: Set<Int>) {
-        context.dataStore.edit { preferences ->
-            preferences[FAVOURITES_KEY] = cityIds.map { it.toString() }.toSet()
+        val favouriteCities: Flow<Set<Int>> =
+            context.dataStore.data
+                .map { preferences ->
+                    preferences[FAVOURITES_KEY]
+                        ?.map {
+                            it.toInt()
+                        }?.toSet() ?: emptySet()
+                }
+
+        suspend fun saveFavouriteCities(cityIds: Set<Int>) {
+            context.dataStore.edit { preferences ->
+                preferences[FAVOURITES_KEY] = cityIds.map { it.toString() }.toSet()
+            }
         }
     }
-}

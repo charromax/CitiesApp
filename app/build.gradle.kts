@@ -17,9 +17,15 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
+        }
+        testInstrumentationRunner = "com.google.dagger.hilt.android.testing.HiltTestRunner"
+    }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
         }
     }
 
@@ -28,7 +34,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -59,9 +65,8 @@ secrets {
     // Configure which keys should be ignored by the plugin by providing regular expressions.
     // "sdk.dir" is ignored by default.
     ignoreList.add("keyToIgnore") // Ignore the key "keyToIgnore"
-    ignoreList.add("sdk.*")       // Ignore all keys matching the regexp "sdk.*"
+    ignoreList.add("sdk.*") // Ignore all keys matching the regexp "sdk.*"
 }
-
 
 dependencies {
 
@@ -73,7 +78,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    testImplementation(libs.junit)
+    implementation(libs.androidx.navigation.testing)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -82,25 +87,30 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // Networking
-    implementation (libs.accompanist.permissions)
-    implementation (libs.retrofit)
-    implementation (libs.converter.gson)
+    implementation(libs.accompanist.permissions)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 
     // DI
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
-    implementation (libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     // Pagination
-    implementation (libs.androidx.paging.runtime)
-    implementation (libs.androidx.paging.compose)
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
 
     // GMAPS
-    implementation (libs.maps.compose)
-    implementation (libs.play.services.maps)
+    implementation(libs.maps.compose)
+    implementation(libs.play.services.maps)
 
     // DATASTORE
-    implementation (libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.preferences)
+
+    // TESTING
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation (libs.mockk)
 }
 
 kapt {

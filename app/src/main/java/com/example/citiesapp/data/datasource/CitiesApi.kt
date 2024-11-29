@@ -8,6 +8,6 @@ interface CityApi {
     @GET("cities.json")
     suspend fun getCities(
         @Query("page") page: Int,
-        @Query("pageSize") pageSize: Int
+        @Query("pageSize") pageSize: Int,
     ): List<CityDto>
 }

@@ -14,28 +14,31 @@ import com.example.citiesapp.presentation.ui.cities.CityListScreen
 import com.example.citiesapp.presentation.ui.cities.CityListWithMapScreen
 import com.example.citiesapp.presentation.ui.map.MapScreen
 
-private const val ROOT = "ROOT"
-private const val MAP_ROUTE = "map/{cityName}/{lat}/{lon}"
-private val CITY_NAME = "cityName"
-private val LATITUDE = "lat"
-private val LONGITUDE = "lon"
+const val ROOT = "ROOT"
+const val MAP_ROUTE = "map/{cityName}/{lat}/{lon}"
+const val CITY_NAME = "cityName"
+const val LATITUDE = "lat"
+const val LONGITUDE = "lon"
 
 @Composable
-fun CityAppNavHost(navController: NavHostController, isPortrait: Boolean) {
-
+fun CityAppNavHost(
+    navController: NavHostController,
+    isPortrait: Boolean,
+) {
     NavHost(
         navController = navController,
-        startDestination = ROOT
+        startDestination = ROOT,
     ) {
         composable(ROOT) {
             if (isPortrait) {
                 CityListScreen(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
                     onCityItemClicked = { city ->
                         navController.navigate("map/${city.name}/${city.coord.lat}/${city.coord.lon}")
-                    }
+                    },
                 )
             } else {
                 CityListWithMapScreen()
@@ -44,11 +47,12 @@ fun CityAppNavHost(navController: NavHostController, isPortrait: Boolean) {
 
         composable(
             route = MAP_ROUTE,
-            arguments = listOf(
-                navArgument(CITY_NAME) { type = NavType.StringType },
-                navArgument(LATITUDE) { type = NavType.FloatType },
-                navArgument(LONGITUDE) { type = NavType.FloatType }
-            )
+            arguments =
+                listOf(
+                    navArgument(CITY_NAME) { type = NavType.StringType },
+                    navArgument(LATITUDE) { type = NavType.FloatType },
+                    navArgument(LONGITUDE) { type = NavType.FloatType },
+                ),
         ) { backStackEntry ->
             val cityName = backStackEntry.arguments?.getString(CITY_NAME) ?: ""
             val lat = backStackEntry.arguments?.getFloat(LATITUDE)?.toDouble() ?: 0.0
@@ -57,7 +61,7 @@ fun CityAppNavHost(navController: NavHostController, isPortrait: Boolean) {
                 cityName = cityName,
                 lat = lat,
                 lon = lon,
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
             )
         }
     }

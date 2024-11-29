@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.citiesapp.presentation.ui.map.Map
@@ -25,9 +26,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 
 @Composable
-fun CityListWithMapScreen(
-    viewModel: CityViewModel = hiltViewModel()
-) {
+fun CityListWithMapScreen(viewModel: CityViewModel = hiltViewModel()) {
     val mapWidth = (LocalConfiguration.current.screenWidthDp / 2).dp
     val state by viewModel.state.collectAsState()
 
@@ -36,38 +35,42 @@ fun CityListWithMapScreen(
 
     LaunchedEffect(state.selectedCity) {
         state.selectedCity?.let {
-            markerState.position = LatLng(
-                it.coord.lat,
-                it.coord.lon
-            )
-            cameraPositionState.position = CameraPosition.fromLatLngZoom(
-                LatLng(it.coord.lat, it.coord.lon), 12f
-            )
+            markerState.position =
+                LatLng(
+                    it.coord.lat,
+                    it.coord.lon,
+                )
+            cameraPositionState.position =
+                CameraPosition.fromLatLngZoom(
+                    LatLng(it.coord.lat, it.coord.lon),
+                    12f,
+                )
         }
     }
-    Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly) {
-
+    Row(modifier = Modifier.fillMaxSize().testTag("CityListWithMapScreen"), horizontalArrangement = Arrangement.SpaceEvenly) {
         CityListScreen(
             modifier = Modifier.width(mapWidth),
             viewModel = viewModel,
-            onCityItemClicked = viewModel::selectCity
+            onCityItemClicked = viewModel::selectCity,
         )
 
         state.selectedCity?.let { selectedCity ->
             Map(
-                modifier = Modifier
-                    .width(mapWidth)
-                    .fillMaxHeight(),
+                modifier =
+                    Modifier
+                        .width(mapWidth)
+                        .fillMaxHeight(),
                 markerState = markerState,
-                cameraPositionState = cameraPositionState
+                cameraPositionState = cameraPositionState,
             )
         } ?: run {
             Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .background(Color.LightGray),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .background(Color.LightGray),
+                contentAlignment = Alignment.Center,
             ) {
                 Text("No hay ciudad seleccionada")
             }

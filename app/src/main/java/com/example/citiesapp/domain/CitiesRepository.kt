@@ -7,6 +7,6 @@ interface CitiesRepository {
     fun fetchCities(
         query: String?,
         favouriteCities: Set<Int>,
-        onlyFavourites: Boolean
+        onlyFavourites: Boolean,
     ): Flow<PagingData<City>>
 }

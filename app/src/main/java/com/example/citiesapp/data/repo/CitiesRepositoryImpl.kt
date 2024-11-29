@@ -10,15 +10,18 @@ import com.example.citiesapp.domain.City
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class CitiesRepositoryImpl @Inject constructor(private val api: CityApi) : CitiesRepository {
-    override fun fetchCities(
-        query: String?,
-        favouriteCities: Set<Int>,
-        onlyFavourites: Boolean
-    ): Flow<PagingData<City>> {
-        return Pager(
-            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
-            pagingSourceFactory = { CityPagingSource(api, query, favouriteCities, onlyFavourites) }
-        ).flow
+class CitiesRepositoryImpl
+    @Inject
+    constructor(
+        private val api: CityApi,
+    ) : CitiesRepository {
+        override fun fetchCities(
+            query: String?,
+            favouriteCities: Set<Int>,
+            onlyFavourites: Boolean,
+        ): Flow<PagingData<City>> =
+            Pager(
+                config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+                pagingSourceFactory = { CityPagingSource(api, query, favouriteCities, onlyFavourites) },
+            ).flow
     }
-}
