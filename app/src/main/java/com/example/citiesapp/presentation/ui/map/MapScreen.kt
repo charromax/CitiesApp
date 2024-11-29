@@ -3,11 +3,9 @@
 package com.example.citiesapp.presentation.ui.map
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -18,8 +16,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 
@@ -32,6 +32,11 @@ fun MapScreen(
     showTopBar: Boolean = true,
     onBackClick: () -> Unit = {}
 ) {
+    val markerState = rememberMarkerState(position = LatLng(lat, lon))
+    val cameraPositionState = rememberCameraPositionState {
+        this.position =
+            CameraPosition.fromLatLngZoom(LatLng(lat, lon), 12f)
+    }
     Scaffold(
         topBar = {
             if (showTopBar) {
@@ -49,19 +54,24 @@ fun MapScreen(
             }
         }
     ) { pv ->
-        Box(
-            modifier = modifier
-                .padding(pv)
+        Map(modifier.padding(pv), markerState, cameraPositionState)
+    }
+}
+
+@Composable
+fun Map(
+    modifier: Modifier,
+    markerState: MarkerState,
+    cameraPositionState: CameraPositionState,
+) {
+    Box(
+        modifier = modifier
+    ) {
+        GoogleMap(
+            modifier = modifier,
+            cameraPositionState = cameraPositionState
         ) {
-            val markerState = rememberMarkerState(position = LatLng(lat, lon))
-            GoogleMap(
-                modifier = modifier,
-                cameraPositionState = rememberCameraPositionState {
-                    position = CameraPosition.fromLatLngZoom(LatLng(lat, lon), 12f)
-                }
-            ) {
-                Marker(markerState)
-            }
+            Marker(markerState)
         }
     }
 }
